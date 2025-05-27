@@ -1,0 +1,191 @@
+{
+  "name": "Recruiter_email_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "\nconst raw = $json[\"message\"][\"text\"];\nconst emails = raw.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g) || [];\nreturn emails.map(email => ({ json: { email } }));\n"
+      },
+      "id": "f97613ed-b937-423f-837f-a4f4b8ee122b",
+      "name": "Extract Emails",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        200,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "id": "36e704bd-e638-46ef-be27-04e19cb7b568",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -60
+      ],
+      "webhookId": "8857be29-3711-49d8-b1c5-79c58bc39883",
+      "credentials": {
+        "telegramApi": {
+          "id": "vWr79i3V7yC6u17u",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Open to Full-Time Opportunities — Full Stack & GenAI Engineer",
+        "emailType": "text",
+        "message": "Hi there, \n\nI hope you're doing well! My name is Vamsi Krishna, and I'm currently seeking full-time opportunities as a Full Stack or GenAI Engineer. \n \nI bring over 5 years of experience building scalable SaaS, FinTech, and AI-powered applications using Java (Spring Boot), React/Next.js, and AWS. Recently, I’ve also been working extensively with GenAI tools like GPT-4o, LangChain, and Amazon Bedrock, building AI-driven platforms that deliver real-world impact.  \n\nIf you have any openings that align with my background, I’d love to connect or learn more. I’m on STEM OPT and available to join immediately.  \n\nYou can find my resume attached and explore some of my projects here: \n\nResume Link: https://feline-nose-632.notion.site/Vamsi-Krishna-resume-200b17b97ef480699aadfe050659797d?pvs=4\nGitHub: https://github.com/Vamsikrishnv\nLinkedIn: https://www.linkedin.com/in/vamsikrishnv/ \n \nThanks so much, and I look forward to hearing from you!  \n\nBest regards, \nVamsi Krishna \nNew York, NY \n+1-475-263-8599 \nvamsikrishnadev4@gmail.com",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        -40
+      ],
+      "id": "090dd3b9-faff-4599-b566-830f0d4accc9",
+      "name": "Gmail",
+      "webhookId": "f6c523d4-5ecb-4faf-a7a4-0d47115b2018",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YtMCikMeVdPGQQZO",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10gWMUpiydn2m9rRyB1oAGwc5m9YujH8WU6DMLW-u558",
+          "mode": "list",
+          "cachedResultName": "Recruiter_Email_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10gWMUpiydn2m9rRyB1oAGwc5m9YujH8WU6DMLW-u558/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10gWMUpiydn2m9rRyB1oAGwc5m9YujH8WU6DMLW-u558/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email ": "={{ $('Extract Emails').item.json.email }}",
+            "Sent At": "={{ $('Telegram Trigger').item.json.message.date }}",
+            "Status": "={{ $json.labelIds[0] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Email ",
+              "displayName": "Email ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sent At",
+              "displayName": "Sent At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        680,
+        -40
+      ],
+      "id": "9010e550-0700-4ca8-9923-db6ff3f1f433",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gB9VaZfhp8OL9dbB",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract Emails": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "36956bc6-4798-4aa0-a77a-7c19cec75201",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c07a8ffe8b0323465af0ce40074144ac86cc63ae5bfab83906e2205895b83d7"
+  },
+  "id": "PvJGMRnEM1qajqPb",
+  "tags": []
+}
